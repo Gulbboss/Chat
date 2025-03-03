@@ -10,6 +10,16 @@ def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
+    new_message = ft.TextField(
+        hint_text="Write a message...",
+        autofocus=True,
+        shift_enter=True,
+        min_lines=1,
+        max_lines=5,
+        filled=True,
+        expand=True,
+        on_submit=send_message_click,
+    )
 
     def dropdown_changed(e):
         new_message.value = new_message.value + emoji_list.value
@@ -88,7 +98,6 @@ def main(page: ft.Page):
         page.route = "/"
         page.update()
 
-
     principal_content = ft.Column(
         [
             ft.Icon(ft.icons.WECHAT, size=200, color=ft.colors.BLUE),
@@ -99,6 +108,7 @@ def main(page: ft.Page):
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
     )
+
     emoji_list = ft.Dropdown(
         on_change=dropdown_changed,
         options=[
@@ -147,17 +157,6 @@ def main(page: ft.Page):
         auto_scroll=True,
     )
 
-    new_message = ft.TextField(
-        hint_text="Write a message...",
-        autofocus=True,
-        shift_enter=True,
-        min_lines=1,
-        max_lines=5,
-        filled=True,
-        expand=True,
-        on_submit=send_message_click,
-    )
-
     page.banner = ft.Banner(
         bgcolor=ft.colors.BLACK45,
         leading=ft.Icon(ft.icons.ERROR, color=ft.colors.RED, size=40),
@@ -189,4 +188,72 @@ def main(page: ft.Page):
         on_dismiss=lambda e: print("Dialog dismissed!"),
     )
 
+    def route_change(route):
+        if page.route == "/":
+            page.clean()
+            page.add(
+                ft.Row(
+                    [principal_content, signin_UI],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                )
+            )
 
+        elif page.route == "/signup":
+            page.clean()
+            page.add(
+                ft.Row(
+                    [principal_content, signup_UI],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                )
+            )
+
+        elif page.route == "/chat":
+            if page.session.contains_key("user"):
+                page.clean()
+                page.add(
+                    ft.Row(
+                        [
+                            ft.Text(value="Chat Flet Messenger", color=ft.colors.WHITE),
+                            ft.ElevatedButton(
+                                text="Log Out",
+                                bgcolor=ft.colors.RED_800,
+                                on_click=btn_exit,
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                    )
+                )
+                page.add(
+                    ft.Container(
+                        content=chat,
+                        border=ft.border.all(1, ft.colors.OUTLINE),
+                        border_radius=5,
+                        padding=10,
+                        expand=True,
+                    )
+                )
+                page.add(
+                    ft.Row(
+                        controls=[
+                            emoji_list,
+                            new_message,
+                            ft.IconButton(
+                                icon=ft.icons.SEND_ROUNDED,
+                                tooltip="Send message",
+                                on_click=send_message_click,
+                            ),
+                        ],
+                    )
+                )
+
+            else:
+                page.route = "/"
+                page.update()
+
+    page.on_route_change = route_change
+    page.add(
+        ft.Row([principal_content, signin_UI], alignment=ft.MainAxisAlignment.CENTER)
+    )
+
+
+ft.app(target=main, view=ft.WEB_BROWSER)
