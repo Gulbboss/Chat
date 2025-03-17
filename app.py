@@ -10,17 +10,6 @@ def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-    new_message = ft.TextField(
-        hint_text="Write a message...",
-        autofocus=True,
-        shift_enter=True,
-        min_lines=1,
-        max_lines=5,
-        filled=True,
-        expand=True,
-        on_submit=send_message_click,
-    )
-
     def dropdown_changed(e):
         new_message.value = new_message.value + emoji_list.value
         page.update()
@@ -108,7 +97,6 @@ def main(page: ft.Page):
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
     )
-
     emoji_list = ft.Dropdown(
         on_change=dropdown_changed,
         options=[
@@ -157,6 +145,17 @@ def main(page: ft.Page):
         auto_scroll=True,
     )
 
+    new_message = ft.TextField(
+        hint_text="Write a message...",
+        autofocus=True,
+        shift_enter=True,
+        min_lines=1,
+        max_lines=5,
+        filled=True,
+        expand=True,
+        on_submit=send_message_click,
+    )
+
     page.banner = ft.Banner(
         bgcolor=ft.colors.BLACK45,
         leading=ft.Icon(ft.icons.ERROR, color=ft.colors.RED, size=40),
@@ -198,7 +197,7 @@ def main(page: ft.Page):
                 )
             )
 
-        elif page.route == "/signup":
+        if page.route == "/signup":
             page.clean()
             page.add(
                 ft.Row(
@@ -207,7 +206,7 @@ def main(page: ft.Page):
                 )
             )
 
-        elif page.route == "/chat":
+        if page.route == "/chat":
             if page.session.contains_key("user"):
                 page.clean()
                 page.add(
